@@ -15,13 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class KafkaConsumerExample
-{
+public class KafkaConsumerExample {
     //config
-    public static Properties getConfig()
-    {
+    public static Properties getConfig() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "master:9092");
         props.put("group.id", "testGroup");
         props.put("enable.auto.commit", "true");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -30,8 +28,7 @@ public class KafkaConsumerExample
         return props;
     }
 
-    public void consumeMessage()
-    {
+    public void consumeMessage() {
         // launch 3 threads to consume
         int numConsumers = 3;
         final String topic = "test1";
@@ -43,19 +40,16 @@ public class KafkaConsumerExample
             executor.submit(consumer);
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread()
-        {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
-            public void run()
-            {
+            public void run() {
                 for (KafkaConsumerRunner consumer : consumers) {
                     consumer.shutdown();
                 }
                 executor.shutdown();
                 try {
                     executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -63,27 +57,22 @@ public class KafkaConsumerExample
     }
 
     // Thread to consume kafka data
-    public static class KafkaConsumerRunner
-            implements Runnable
-    {
+    public static class KafkaConsumerRunner implements Runnable {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final KafkaConsumer<String, String> consumer;
         private final String topic;
 
-        public KafkaConsumerRunner(String topic)
-        {
+        public KafkaConsumerRunner(String topic) {
             Properties props = getConfig();
             consumer = new KafkaConsumer<String, String>(props);
             this.topic = topic;
         }
 
-        public void handleRecord(ConsumerRecord record)
-        {
+        public void handleRecord(ConsumerRecord record) {
             System.out.println("name: " + Thread.currentThread().getName() + " ; topic: " + record.topic() + " ; offset" + record.offset() + " ; key: " + record.key() + " ; value: " + record.value());
         }
 
-        public void run()
-        {
+        public void run() {
             try {
                 // subscribe
                 consumer.subscribe(Arrays.asList(topic));
@@ -95,28 +84,24 @@ public class KafkaConsumerExample
                         handleRecord(record);
                     }
                 }
-            }
-            catch (WakeupException e) {
+            } catch (WakeupException e) {
                 // Ignore exception if closing
                 if (!closed.get()) {
                     throw e;
                 }
-            }
-            finally {
+            } finally {
                 consumer.close();
             }
         }
 
         // Shutdown hook which can be called from a separate thread
-        public void shutdown()
-        {
+        public void shutdown() {
             closed.set(true);
             consumer.wakeup();
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         KafkaConsumerExample example = new KafkaConsumerExample();
         example.consumeMessage();
     }

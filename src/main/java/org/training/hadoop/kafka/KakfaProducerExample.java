@@ -17,8 +17,7 @@ public class KakfaProducerExample
             producer.send(new ProducerRecord<String, String>("test1", Integer.toString(i), Integer.toString(i)));
             try {
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -27,10 +26,9 @@ public class KakfaProducerExample
     }
 
     // config
-    public Properties getConfig()
-    {
+    public Properties getConfig() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "master:9092");
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);
@@ -41,8 +39,7 @@ public class KakfaProducerExample
         return props;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         KakfaProducerExample example = new KakfaProducerExample();
         example.produceMessage();
     }
