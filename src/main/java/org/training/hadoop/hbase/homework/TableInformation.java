@@ -1,4 +1,4 @@
-package org.training.hadoop.hbase;
+package org.training.hadoop.hbase.homework;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -14,13 +14,15 @@ import java.io.IOException;
 
 public class TableInformation {
 
-  public static final String TABLE_NAME = "scores_test";
-  public static final String FAMILY_NAME_1 = "course";
-  public static final String FAMILY_NAME_2 = "profile";
-  public static final String QUALIFIER_NAME_1_1 = "math";
-  public static final String QUALIFIER_NAME_1_2 = "art";
-  public static final String QUALIFIER_NAME_2_1 = "gender";
-  public static final String QUALIFIER_NAME_2_2 = "name";
+  public static final String TABLE_NAME = "blog";
+  public static final String FAMILY_NAME_ARTICLE = "article";
+  public static final String FAMILY_NAME_AUTHOR = "author";
+  public static final String QUALIFIER_NAME_1_TITLE = "title";
+  public static final String QUALIFIER_NAME_1_CONTENT = "content";
+  public static final String QUALIFIER_NAME_1_TAG = "tag";
+  public static final String QUALIFIER_NAME_2_NAME = "name";
+  public static final String QUALIFIER_NAME_2_GENDER = "gender";
+  public static final String QUALIFIER_NAME_2_AGE = "age";
 
   public static Configuration getHBaseConfiguration() {
     Configuration conf = HBaseConfiguration.create();
@@ -37,8 +39,8 @@ public class TableInformation {
 
     if (!admin.tableExists(TableName.valueOf(TABLE_NAME))) {
       HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(TABLE_NAME));
-      HColumnDescriptor columnDescriptor_1 = new HColumnDescriptor(Bytes.toBytes(FAMILY_NAME_1));
-      HColumnDescriptor columnDescriptor_2 = new HColumnDescriptor(Bytes.toBytes(FAMILY_NAME_2));
+      HColumnDescriptor columnDescriptor_1 = new HColumnDescriptor(Bytes.toBytes(FAMILY_NAME_ARTICLE));
+      HColumnDescriptor columnDescriptor_2 = new HColumnDescriptor(Bytes.toBytes(FAMILY_NAME_AUTHOR));
       tableDescriptor.addFamily(columnDescriptor_1);
       tableDescriptor.addFamily(columnDescriptor_2);
       admin.createTable(tableDescriptor);
